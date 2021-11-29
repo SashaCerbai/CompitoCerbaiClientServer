@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.io.*;
 
 public class Client {
-    private int porta; // porta su cui si aspetta i client [MONOTHREAD]
+    private int porta; // porta su cui si aspetta i client
     private String indirizzoServer; // indirizzo del server
 
     private Socket server; // socket per il server
@@ -25,8 +25,7 @@ public class Client {
 
             server = new Socket(indirizzoServer, porta);
 
-            inDalServer = new BufferedReader(new InputStreamReader(server.getInputStream())); // riceve messaggi dal
-                                                                                              // server
+            inDalServer = new BufferedReader(new InputStreamReader(server.getInputStream())); // riceve messaggi dal server
             outNelServer = new DataOutputStream(server.getOutputStream()); // manda messaggi nel server
 
         } catch (Exception e) {

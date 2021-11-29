@@ -4,15 +4,18 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.ArrayList;
 
 public class Server {
-    private int porta; // porta sulla quale si aspetta il client [MONOTHREAD]
+    private int porta; // porta sulla quale si aspetta il client
 
     private ServerSocket server; // il socket che aspetterà l'arrivo del client
     private Socket client; // socket del client
 
     private BufferedReader inDalClient; // qui si riceve le cose dal client
     private DataOutputStream outNelClient; // si invia al client
+
+    private ArrayList<String> lista = new ArrayList<>();
 
     public Server(int porta) {
         this.porta = porta;
@@ -47,17 +50,28 @@ public class Server {
         System.out.println("Inizio comunicazione");
 
         try {
-            outNelClient.writeBytes("Benvenuto, invia un messaggio\n");
+            outNelClient.writeBytes("Benvenuto, aggiungi i prodotti alla lista");
+            outNelClient.writeBytes("Comandi disponibili: chiudi(per la chiusura della connessione) e lista(per vedere la lista)\n");
 
             while (true) {
+
                 messaggio = inDalClient.readLine();
-                System.out.println("messaggio ricevuto dal client: " + messaggio);
 
                 if (messaggio.equalsIgnoreCase("chiudi")) {
                     break;
                 }
-                outNelClient.writeBytes("messaggio: " + messaggio + "\n"); // messaggio inviato
 
+                if (messaggio.equalsIgnoreCase("lista")) {
+                    outNelClient.writeBytes("La lista contiene: ");
+                    outNelClient.writeBytes(stampaLista() + " -> ");
+                } else {
+                    lista.add(messaggio);
+                    System.out.println("Prodotto aggiunto alla lista: " + messaggio);
+                    outNelClient.writeBytes("--------Lista Aggiornata--------");
+                }
+
+                outNelClient.writeBytes(
+                        "Inserisci un prodotto nella lista o digita LISTA per vedere la lista con i prodotti gia inseriti\n");// richiesta al client
             }
 
         } catch (Exception e) {
@@ -82,6 +96,18 @@ public class Server {
             System.out.println("Errore durante la chiusura");
             System.err.println(e.getMessage());
         }
+    }
+
+    public String stampaLista() {
+        String tuttaLista = "";
+        for (int i = 0; i < lista.size(); i++) {
+            if (i == lista.size()-1) {
+                tuttaLista += lista.get(i);
+            } else {
+                tuttaLista += lista.get(i) + ", ";
+            }
+        }
+        return tuttaLista;
     }
 
 }
